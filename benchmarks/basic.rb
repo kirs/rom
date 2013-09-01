@@ -68,8 +68,17 @@ def delete
   env[:users].each { |user| env[:users].delete(user) }
 end
 
+if ENV['PROFILE']
+  require 'perftools'
+  PerfTools::CpuProfiler.start("./tmp/basic_#{COUNT}")
+end
+
 Benchmark.bm do |x|
   x.report("seed")            { seed }
   x.report("delete")          { delete }
   x.report("seed and delete") { seed and delete }
+end
+
+if ENV['PROFILE']
+  PerfTools::CpuProfiler.stop
 end
